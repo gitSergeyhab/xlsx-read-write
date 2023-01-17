@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style type="text/css">
+.table_dark {
+  font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+  font-size: 14px;
+  width: 640px;
+  text-align: left;
+  border-collapse: collapse;
+  background: #252F48;
+  margin: 10px;
+}
+.table_dark th {
+  color: #EDB749;
+  border-bottom: 1px solid #37B5A5;
+  padding: 12px 17px;
+}
+.table_dark td {
+  color: #CAD4D6;
+  border-bottom: 1px solid #37B5A5;
+  border-right:1px solid #37B5A5;
+  padding: 7px 17px;
+}
+
+.table_dark tr:hover td {
+  text-decoration: underline;
+}
+  </style>
+
+    <title>Document</title>
+</head>
+<body>
+    <form>
+        <label>
+            <input id="file" type="file" accept=".xls,.xlsx"/>  File
+        </label>
+        <button type="button" id="btn-convert">Convert</button>
+        <button type="button" id="btn-write">Write File</button>
+    </form>
+<table id="table" class="table_dark">
+<tr><th>текст заголовка</th><th>текст заголовка</th></tr>
+<tr><td>данные</td><td>данные</td></tr>
+</table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" ></script>
+    <script src="script.js"></script>
+</body>
+</html>

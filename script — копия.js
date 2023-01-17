@@ -25,12 +25,11 @@ const Code = {
 	ACT: 'АКТ',	
 }
 
-const headers = Object.values(Column);
+
 
 const fileInput = document.querySelector('#file');
 const btnConvert = document.querySelector('#btn-convert');
 const btnWrite = document.querySelector('#btn-write');
-const table = document.querySelector('#table');
 
 
 
@@ -62,15 +61,12 @@ const createFileName = (obj) => {
 	return [Date, Part, Obj, type, last].filter((x) => x).join('_');
 }
 
-
-
-
 const countFiles = (obj) => {
 	const Action = obj[Column.Action];
 	const PRM = obj[Column.PRM];
 	const Watch = obj[Column.Watch];
 	const Count = obj[Column.Count];
-	//console.log([Action, PRM, Watch, Count])
+	console.log([Action, PRM, Watch, Count])
 	const count = [Action, PRM, Watch, Count].filter((x) => x).reduce((acc, item) => acc + +item, 0);
 	return count;
 }
@@ -95,59 +91,13 @@ btnConvert.addEventListener('click', () => {
 		range.s.r = 2; // <-- zero-indexed, so setting to 1 will skip row 0
 		worksheet['!ref'] = XLSX.utils.encode_range(range);
             readObj = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-		//readObj.forEach((item) => console.log(item, createFileName (item)))
+		readObj.forEach((item) => console.log(item, createFileName (item)))
 
         }
     }
 })
 
-const getR = (value) => `<tr>${value}</tr>`;
-const getTH = (value) => `<th>${value}</th>`;
-const getTD = (value) => `<td>${value}</td>`;
 
-const getRowFromEl = (elementsObj) => {
-	const elements = Object.values(elementsObj)
-	elementsArr = elements.map(getTD);
-	return getR(elementsArr.join());
-}
-
-const addKeyToObj = (key, obj) => (obj[key] ? {...obj} : {...obj, [key]: ''});
-
-const addKeysToObjList = (keys, objList) => {
-console.log({objList})
-	const newObjList = [];
-
-	objList.forEach((item) => {
-		const obj = {...item}
-		for (const key of keys) {
-			addKeyToObj(key, obj)
-		}
-		newObjList.push(obj)
-	})
-		
-	
-	console.log({newObjList})
-
-	return newObjList;
-}
-
-
-const getFullObj = (obj) => obj.map((item) => ({...item, 'имя файла... примерное': createFileName (item), 'количество файлов': countFiles (item)  }))
-const createTable = (obj) => {
-	const objWithAllKeys = addKeysToObjList(headers, obj)
-	const fullObj = getFullObj(objWithAllKeys);
-	
-console.log(headers)
-	const thElements = headers.map((item) => getTD(item));
-console.log(thElements)
-	const headerRow = getR(thElements.join(''));
-	fullObjElements = fullObj.map(getRowFromEl);
-	const tableBody = fullObjElements.join('');
-	const tableStr = headerRow + tableBody;
-return tableStr
-
-
-}
 
 
 
@@ -160,8 +110,7 @@ btnWrite.addEventListener('click', () => {
         const newWB = XLSX.utils.book_new();
         const newWS = XLSX.utils.json_to_sheet(newObj);
         XLSX.utils.book_append_sheet(newWB, newWS, 'NEW');
-       // XLSX.writeFile(newWB, 'new-file.xlsx');
-	table.innerHTML = createTable(readObj);
+        XLSX.writeFile(newWB, 'new-file.xlsx');
     }
 })
 
