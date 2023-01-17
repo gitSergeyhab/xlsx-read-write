@@ -12,6 +12,8 @@ const Column = {
 	PRM: 'допуск',
 	Watch: 'осмотр',
 	Count: 'учет',
+	Name: 'имя файла',
+	FilesCount: 'количество файлов'
 }
 
 const Code = {
@@ -22,17 +24,32 @@ const Code = {
 	PRM: 'ПРМ',
 	Watch: 'ОСМ',
 	Count: 'ПУ',
-	ACT: 'АКТ',	
+	ACT: 'АКТ'
 }
 
-const headers = Object.values(Column);
+const orderedHeaders = [
+	Column.Part, Column.Date, 
+	Column.N, Column.R, Column.Obj, Column.Work, 
+	Column.Action, Column.PRM, Column.Watch, Column.Count, 
+	Column.Name, Column.FilesCount
+]
 
 const fileInput = document.querySelector('#file');
 const btnConvert = document.querySelector('#btn-convert');
+const btnShow = document.querySelector('#btn-show');
 const btnWrite = document.querySelector('#btn-write');
 const table = document.querySelector('#table');
 
+const add_BP_toWork = (work) => {
+	if (!work) {
+		return '';
+	}
+	if (isNaN(+work[0])) {
+		return work
+	}
 
+	return `БП ${work}`
+}
 
 
 const createFileName = (obj) => {
@@ -57,12 +74,10 @@ const createFileName = (obj) => {
 	const count = Count ? Code.Count : '';
 
 	const type = [action, prm, watch, count].filter((x) => x).join('_');
-	const last = [n, r, Work].filter((x) => x).join('_');
+	const last = [n, r,  add_BP_toWork(Work) ].filter((x) => x).join('_');
 
 	return [Date, Part, Obj, type, last].filter((x) => x).join('_');
 }
-
-
 
 
 const countFiles = (obj) => {
@@ -70,7 +85,6 @@ const countFiles = (obj) => {
 	const PRM = obj[Column.PRM];
 	const Watch = obj[Column.Watch];
 	const Count = obj[Column.Count];
-	//console.log([Action, PRM, Watch, Count])
 	const count = [Action, PRM, Watch, Count].filter((x) => x).reduce((acc, item) => acc + +item, 0);
 	return count;
 }
@@ -78,7 +92,7 @@ const countFiles = (obj) => {
 
 const reader = new FileReader();
 let file = null;
-let readObj = {};
+let readObjList = [];
 
 fileInput.addEventListener('change', (evt) => {file = evt.target.files[0]});
 
@@ -86,82 +100,77 @@ btnConvert.addEventListener('click', () => {
     if (file) {
         reader.readAsBinaryString(file);
         reader.onload = (evt) => {
-            const data = evt.target.result;
-            const workbook = XLSX.read(data, {type:"binary", cellDates: true});
+        const data = evt.target.result;
+        const workbook = XLSX.read(data, {type:"binary", cellDates: true});
 
-            const sheetName = workbook.SheetNames[0];
+        const sheetName = workbook.SheetNames[0];
 		const worksheet = workbook.Sheets[sheetName];
 		const range = XLSX.utils.decode_range(worksheet['!ref']);
 		range.s.r = 2; // <-- zero-indexed, so setting to 1 will skip row 0
 		worksheet['!ref'] = XLSX.utils.encode_range(range);
-            readObj = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-		//readObj.forEach((item) => console.log(item, createFileName (item)))
-
+        readObjList = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
         }
     }
 })
+
+
+const convertObjListToListList = (keys, objList) => {
+	const arr = [];
+
+	objList.forEach((item) => {
+		const innerArr = [];
+		for (const key of keys) {
+			if (item[key]) {
+				innerArr.push(item[key]);
+			} else {
+				innerArr.push('');
+			}
+		}
+		arr.push(innerArr);
+	})
+	return arr;
+} 
 
 const getR = (value) => `<tr>${value}</tr>`;
 const getTH = (value) => `<th>${value}</th>`;
 const getTD = (value) => `<td>${value}</td>`;
 
-const getRowFromEl = (elementsObj) => {
-	const elements = Object.values(elementsObj)
-	elementsArr = elements.map(getTD);
-	return getR(elementsArr.join());
-}
 
-const addKeyToObj = (key, obj) => (obj[key] ? {...obj} : {...obj, [key]: ''});
+const getTDElements = (elements) => elements.map(getTD).join('');
 
-const addKeysToObjList = (keys, objList) => {
-console.log({objList})
-	const newObjList = [];
-
-	objList.forEach((item) => {
-		const obj = {...item}
-		for (const key of keys) {
-			addKeyToObj(key, obj)
-		}
-		newObjList.push(obj)
-	})
-		
-	
-	console.log({newObjList})
-
-	return newObjList;
+const getTableBody = (listOfDataList) => {
+	const rows = listOfDataList.map((item) => getR(getTDElements(item)));
+	return rows.join('');
 }
 
 
-const getFullObj = (obj) => obj.map((item) => ({...item, 'имя файла... примерное': createFileName (item), 'количество файлов': countFiles (item)  }))
+const getFullObj = (obj) => obj.map((item) => ({...item, [Column.Name]: createFileName (item), [Column.FilesCount]: countFiles (item)  }));
+
 const createTable = (obj) => {
-	const objWithAllKeys = addKeysToObjList(headers, obj)
-	const fullObj = getFullObj(objWithAllKeys);
+	const fullObj = getFullObj(obj);
+	const listOfDataList = convertObjListToListList(orderedHeaders, fullObj);
+	const tableBody = getTableBody(listOfDataList);
 	
-console.log(headers)
-	const thElements = headers.map((item) => getTD(item));
-console.log(thElements)
+	const thElements = orderedHeaders.map((item) => getTH(item));
 	const headerRow = getR(thElements.join(''));
-	fullObjElements = fullObj.map(getRowFromEl);
-	const tableBody = fullObjElements.join('');
+
 	const tableStr = headerRow + tableBody;
-return tableStr
-
-
+	return tableStr
 }
 
 
-
-
-
-btnWrite.addEventListener('click', () => {
-    if (readObj) {
-
-	const newObj = readObj.map((item) => ({...item, 'имя файла... примерное': createFileName (item), 'количество файлов': countFiles (item)  }))
-        const newWB = XLSX.utils.book_new();
-        const newWS = XLSX.utils.json_to_sheet(newObj);
-        XLSX.utils.book_append_sheet(newWB, newWS, 'NEW');
-       // XLSX.writeFile(newWB, 'new-file.xlsx');
-	table.innerHTML = createTable(readObj);
+btnShow.addEventListener('click', () => {
+    if (readObjList) {
+		table.innerHTML = createTable(readObjList);
     }
 })
 
+btnWrite.addEventListener('click', () => {
+    if (readObjList) {
+		const newObj = getFullObj(readObjList)
+        const newWB = XLSX.utils.book_new();
+        const newWS = XLSX.utils.json_to_sheet(newObj);
+        XLSX.utils.book_append_sheet(newWB, newWS, 'NEW');
+        XLSX.writeFile(newWB, 'new-file.xlsx');
+    }
+})
