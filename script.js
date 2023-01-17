@@ -98,17 +98,17 @@ fileInput.addEventListener('change', (evt) => {file = evt.target.files[0]});
 
 btnConvert.addEventListener('click', () => {
     if (file) {
-        reader.readAsBinaryString(file);
-        reader.onload = (evt) => {
-        const data = evt.target.result;
-        const workbook = XLSX.read(data, {type:"binary", cellDates: true});
+		reader.readAsBinaryString(file);
+		reader.onload = (evt) => {
+		const data = evt.target.result;
+		const workbook = XLSX.read(data, {type:"binary", cellDates: true});
 
-        const sheetName = workbook.SheetNames[0];
+		const sheetName = workbook.SheetNames[0];
 		const worksheet = workbook.Sheets[sheetName];
 		const range = XLSX.utils.decode_range(worksheet['!ref']);
 		range.s.r = 2; // <-- zero-indexed, so setting to 1 will skip row 0
 		worksheet['!ref'] = XLSX.utils.encode_range(range);
-        readObjList = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+		readObjList = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
         }
     }
 })
@@ -150,7 +150,7 @@ const createTable = (obj) => {
 	const fullObj = getFullObj(obj);
 	const listOfDataList = convertObjListToListList(orderedHeaders, fullObj);
 	const tableBody = getTableBody(listOfDataList);
-	
+
 	const thElements = orderedHeaders.map((item) => getTH(item));
 	const headerRow = getR(thElements.join(''));
 
@@ -168,9 +168,9 @@ btnShow.addEventListener('click', () => {
 btnWrite.addEventListener('click', () => {
     if (readObjList) {
 		const newObj = getFullObj(readObjList)
-        const newWB = XLSX.utils.book_new();
-        const newWS = XLSX.utils.json_to_sheet(newObj);
-        XLSX.utils.book_append_sheet(newWB, newWS, 'NEW');
-        XLSX.writeFile(newWB, 'new-file.xlsx');
+		const newWB = XLSX.utils.book_new();
+		const newWS = XLSX.utils.json_to_sheet(newObj);
+		XLSX.utils.book_append_sheet(newWB, newWS, 'NEW');
+		XLSX.writeFile(newWB, 'new-file.xlsx');
     }
 })
