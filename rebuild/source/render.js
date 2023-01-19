@@ -6,6 +6,7 @@ const getTD = (value) => `<td>${value}</td>`;
 const getTDElements = (elements) => elements.map(getTD).join('');
 
 const getTableBody = (listOfDataList) => {
+	console.log(listOfDataList)
 	const rows = listOfDataList.map((item) => getTR(getTDElements(item)));
 	return rows.join('');
 }
@@ -33,14 +34,22 @@ Render.createUl = (fileNameList) => {
 }
 
 
-Render.createTable = (objList) => {
-	const fullObj = Convert.getFullObjList(objList);
-	const listOfDataList = Convert.convertObjListToListList(Header.Write, fullObj);
-	const tableBody = getTableBody(listOfDataList);
+// Render.createTable = (objList) => {
+// 	const fullObj = Convert.getFullObjList(objList);
+// 	const listOfDataList = Convert.convertObjListToListList(Header.Write, fullObj);
+// 	const tableBody = getTableBody(listOfDataList);
 
-	const thElements = Header.Write.map((item) => getTH(item));
+// 	const thElements = Header.Write.map((item) => getTH(item));
+// 	const headerRow = getTR(thElements.join(''));
+
+// 	const tableStr = headerRow + tableBody;
+// 	return tableStr
+// }
+
+Render.createTable = (objList, headers) => {
+	const tableBody = getTableBody(objList);
+	const thElements = headers.map((item) => getTH(item));
 	const headerRow = getTR(thElements.join(''));
-
 	const tableStr = headerRow + tableBody;
 	return tableStr
 }

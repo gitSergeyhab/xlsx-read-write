@@ -10,16 +10,41 @@
     <title>Document</title>
 </head>
 <body>
-    <form>
-        <label>Загрузить файл
-            <input id="file" type="file" accept=".xls,.xlsx"/>
-        </label>
-        <button type="button" id="btn-convert">Достать</button>
-        <button type="button" id="btn-show">Показать таблицу</button>
-        <button type="button" id="btn-names">Показать названия файлов</button>
-        <button type="button" id="btn-write">Записать в файл</button>
+    <section>
+        <h2>Для самодельного файла</h2>
+        <form>
+            <div>            
+                <label>Загрузить файл таблицы
+                    <input id="file" type="file" accept=".xls,.xlsx"/>
+                </label>
+            </div>
+            <div>
+                <button type="button" id="btn-convert">Достать</button>
+                <button type="button" id="btn-show">Показать таблицу</button>
+                <button type="button" id="btn-names">Показать названия файлов</button>
+                <button type="button" id="btn-write">Записать в файл</button>
+            </div>
 
-    </form>
+
+        </form>
+    </section>
+    <section>
+        <h2>Для файла выгрузки из журнала</h2>
+        <form>
+            <div>            
+                <label>Загрузить файл выгрузки
+                    <input id="file-oj" type="file" accept=".xls,.xlsx"/>
+                </label>
+            </div>
+            <div>
+                <button type="button" id="btn-convert-oj">Достать</button>
+                <button type="button" id="btn-show-oj">Показать таблицу</button>
+                <!-- <button type="button" id="btn-names-oj">Показать названия файлов</button> -->
+                <button type="button" id="btn-write-oj">Записать в файл</button>
+            </div>
+        </form>
+    </section>
+
     <h2 id="error" class="error"></h2>
 <table id="table" class="table_dark">
 </table>

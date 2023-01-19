@@ -9,6 +9,15 @@ const add_BP_toWork = (work) => {
 	return `БП ${work}`
 }
 
+const checkStartWork = (obj) => {
+	const {Content} = Settings.Column.ReadDown;
+	return (obj[Content].indexOf('закончена') === -1) && (obj[Content][0] === 'П')
+}  
+
+Utils.filterByContain = (objList) => objList.filter(checkStartWork);
+
+
+
 Utils.createFileName = (obj) => {
 	const {Read} = Settings.Column 
 
