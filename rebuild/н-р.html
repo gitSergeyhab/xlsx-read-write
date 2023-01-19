@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="source_/style.css" rel="stylesheet">
+
+
+    <title>Document</title>
+</head>
+<body>
+<h1> наряды - распоряжения за неделю </h1>
+    <form>
+        <label>Загрузить файл
+            <input id="file" type="file" accept=".xls,.xlsx"/>
+        </label>
+        <button type="button" id="btn-convert">Достать</button>
+        <button type="button" id="btn-show">Показать таблицу</button>
+        <button type="button" id="btn-names">Показать названия файлов</button>
+        <button type="button" id="btn-write">Записать в файл</button>
+
+    </form>
+    <h2 id="error" class="error"></h2>
+<table id="table" class="table_dark">
+</table>
+
+<div id="names" class="list_dark"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" ></script>
+    <script src="source_/global.js"></script>
+    <script src="source_/settings.js"></script>
+    <script src="source_/utils.js"></script>
+    <script src="source_/convert.js"></script>
+    <script src="source_/sort.js"></script>
+    <script src="source_/render.js"></script>
+    <script src="source_/script.js"></script>
+</body>
+</html>
