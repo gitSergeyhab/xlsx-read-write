@@ -12,7 +12,8 @@ let unionDataList = [];
 const readerOwn = new FileReader();
 const readerOJ = new FileReader();
 
-new AirDatepicker('#air-datepicker');
+new AirDatepicker('#air-datepicker', {autoClose: true, position: 'bottom center'});
+
 
 const fileInputOwn = document.querySelector('#file-own');
 const fileInputOJ = document.querySelector('#file-oj');
@@ -29,6 +30,8 @@ const btnShowResultNames = document.querySelector('#btn-show-result-names');
 const btnShowNames = document.querySelector('#btn-show-names');
 
 const btnWrite = document.querySelector('#btn-write');
+
+const picker = document.querySelector('#air-datepicker');
 
 
 const table = document.querySelector('#table');
@@ -62,8 +65,7 @@ btnAddData.addEventListener('click', () => {
 			range.s.r = 2; // <-- zero-indexed, so setting to 1 will skip row 0
 			worksheet['!ref'] = XLSX.utils.encode_range(range);
 			ownRawDataList = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-			// const ownData = extractData(ownRawDataList);
-			// console.log({ownRawDataList});
+
         }
 
 		readerOJ.onload = (evt) => {
@@ -71,7 +73,6 @@ btnAddData.addEventListener('click', () => {
 			const workbook = XLSX.read(data, {type:"binary", cellDates: true});
 			const sheetName = workbook.SheetNames[0];
 			ojRawDataList = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-			// console.log({ojRawDataList});
         }
     } else if (!fileOwn && !fileOJ) {
 		error.textContent = 'Файлы не загружен'
@@ -137,16 +138,20 @@ const filterByPeriod = (dataList, date) =>
 
 
 btnConvertData.addEventListener('click', () => {
-	const date = '11.01.2023';
-    if (ojRawDataList.length && ownRawDataList.length) {
+	const date = picker.value;
+
+    if (ojRawDataList.length && ownRawDataList.length && date) {
 		clearError();
 		const ojData = Convert.convertToFileData(ojRawDataList);
 		const data = [...ojData, ...ownRawDataList];
 		const sortedData = Sort.sortListByDate(data);
 		const filteredList = filterByNRNumber(sortedData);
 		unionDataList = filterByPeriod(filteredList, date);
-    } else {
+    } else if (!data) {
+		error.textContent = 'нужно выбрать дату начала периода'
+	} else {
 		addNoDateError();
+
 	}
 })
 
@@ -155,7 +160,11 @@ btnConvertData.addEventListener('click', () => {
 
 
 btnWrite.addEventListener('click', () => {
+	// const picker = document.querySelector('#air-datepicker');
+	// const xx = document.querySelector('#xx');
 
+
+	console.log(picker.value)
 })
 
 
