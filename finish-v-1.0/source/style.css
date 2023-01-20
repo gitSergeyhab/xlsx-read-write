@@ -1,0 +1,139 @@
+body {
+    min-width: 600px;
+}
+
+body * {
+    box-sizing: border-box;
+}
+
+section {
+    border: 3px #000000 solid;
+    margin: 1rem;
+    padding: 0.1rem 1rem;
+    box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.4);
+    transition: all 0.3s;
+}
+
+section:hover{
+    border: 3px #700808 solid;
+    box-shadow: 6px 6px 12px 0px rgba(34, 60, 80, 0.6);
+
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h3 {
+    text-align: center;
+    margin: 0.3rem;
+}
+
+.btn-block {
+    max-width: 100%;
+    width: 100%;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+button {
+    color: #FFFFFF;
+    background-color: #000000;
+    cursor: pointer;
+    box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+    transition: all 0.3s;
+}
+
+button:hover {
+    color: #000000;
+    background-color: #FFFFFF;
+    box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.5);
+    border-radius: 5px;
+}
+
+.table_dark, .list_dark  {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 14px;
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+    background: #252F48;
+    margin: 10px;
+}
+
+.table_dark th {
+    color: #EDB749;
+    border-bottom: 1px solid #37B5A5;
+    padding: 0.2rem 0.4rem;
+    width: max-content;
+}
+  
+  
+.table_dark td, .list_dark li {
+    color: #CAD4D6;
+    border-bottom: 1px solid #37B5A5;
+    border-right: 1px solid #37B5A5;
+    padding: 0.2rem 0.4rem;
+    width: max-content;
+}
+  
+.list_dark li {
+    width: 100%;
+}
+  
+.list_dark li:hover {
+    color: orange
+}
+  
+.checked {
+    text-decoration: line-through;
+}
+  
+.hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    white-space: nowrap;
+    clip-path: inset(100%);
+    clip: rect(0 0 0 0);
+    overflow: hidden;
+}
+  
+.checkbox:checked ~ strong {
+    color: chartreuse;
+    text-decoration: line-through;
+}
+  
+strong {
+    cursor: pointer;
+}
+
+.error {
+    color: darkred;
+    text-align: center;
+}
+
+.addition {
+    opacity: 0.2;
+    scale: 0.5;
+    transition: 0.5s;
+}
+
+
+.addition:hover {
+    opacity: 1;
+    scale: 1;
+}
+
+.air-datepicker-input {
+    width: 100%;
+    min-width: 600px;
+}

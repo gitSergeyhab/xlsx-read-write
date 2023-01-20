@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="source/side/air-datepicker.css" rel="stylesheet">
+    <link href="source/style.css" rel="stylesheet">
+    <title>видеофиксция и прочий бред</title>
+
+
+    <title>Document</title>
+</head>
+<body>
+    <h3>Никакой гарантии, что всё получится, нет</h3>
+    <h3>Если нет интерернета, ничего не выйдет</h3>
+    <h3>Сначала делаем выгрузку из оперативного журнала за последние 40 дней</h3>
+    <form>
+
+    <section>
+        <h3>1. Добавляем файл выгрузки и файл своей таблицы</h3>
+            <div class="btn-block">            
+                <label>Загрузить файл таблицы
+                    <input id="file-own" type="file" accept=".xls,.xlsx"/>
+                </label>
+                <label>Загрузить файл выгрузки
+                    <input id="file-oj" type="file" accept=".xls,.xlsx"/>
+                </label>
+            </div>
+            <input type="text" class="form-control air-datepicker-input" id="air-datepicker">
+    </section>
+
+    <section>
+        <h3>2. Достаем данные</h3>
+            <div class="btn-block"> 
+                <button type="button" id="btn-add-all">Просто жмем сюда</button>
+            </div>
+    </section>
+
+    <section class="addition">
+        <h3>Совершенно необязательный блок</h3>
+            <div class="btn-block">
+                <button type="button" id="btn-show-own">Показать что выгрузилось из файла таблицы</button>
+                <button type="button" id="btn-show-oj">Показать что выгрузилось из файла журнала</button>
+            </div>
+    </section>
+
+    <section>
+        <h3>3. Обрабатываем, ищем, считаем, объединяем, фильтруем, сортируем...</h3>
+            <div class="btn-block">
+                <button type="button" id="btn-convert-all">Жмем...</button>
+            </div>
+    </section>
+
+    <section  class="addition">
+        <h3>Совершенно необязательный блок, но я б всё-таки глянул...</h3>
+        <div class="btn-block">
+            <button type="button" id="btn-show-result">Показать что получилось</button>
+            <button type="button" id="btn-show-result-names">... что получилось с именами файлов</button>
+            <button type="button" id="btn-show-names">показать примерные имена</button>
+        </div>
+    </section>
+
+    <section>
+        <h3>4. Если все норм, записываем в файл...</h3>
+        <div class="btn-block">
+            <button type="button" id="btn-write">записать</button>
+        </div>
+
+    </section>
+</form>
+
+
+    <section  class="addition">
+        <h3>Если ничего не получилось, проклинаем и делаем все руками... <br/>или жмем сюда:</h3>
+        <div class="btn-block">
+            <button type="button" id="btn-destroy">взорвать весь мир к чертям</button>
+        </div>
+    </section>
+    <h3>Копируем из файла все кроме заголовков. Вставляем в свой файл. Применям форматирование</h3>
+
+
+    <h3 id="error" class="error"></h3>
+    <table id="table" class="table_dark"></table>
+    <div id="names" class="list_dark"></div>
+
+    <script src="source/side/air-datepicker.js"></script>
+    <script src="source/side/xlsx.full.min.js"></script>
+    <script src="source/global.js"></script>
+    <script src="source/settings.js"></script>
+    <script src="source/header.js"></script>
+    <script src="source/utils.js"></script>
+    <script src="source/convert.js"></script>
+    <script src="source/sort.js"></script>
+    <script src="source/render.js"></script>
+    <script src="source/script.js"></script>
+</body>
+</html>
