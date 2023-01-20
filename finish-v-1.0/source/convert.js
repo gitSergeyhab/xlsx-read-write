@@ -1,5 +1,3 @@
-
-
 Convert.convertObjListToListList = (keys, objList) => {
 	const arr = [];
 
@@ -100,11 +98,6 @@ const getNeedColObj = (obj) => {
 
 Convert.convertToShow = (rowDataList) => Convert.convertObjListToListList(Header.Read, rowDataList);
 
-// Convert.convertToShow = (rowDataList) => {
-// 	const fullObj = Convert.getFullObjList(rowDataList);
-// 	const listOfDataList = Convert.convertObjListToListList(Header.Write, fullObj);
-// 	return listOfDataList;
-// }
 
 Convert.convertToShowOJ = (rowDataList) => {
 	const filteredObjList = Utils.filterByContain(rowDataList);
@@ -113,8 +106,46 @@ Convert.convertToShowOJ = (rowDataList) => {
 	return listOfDataList;
 }
 
+// Convert.convertToShow = (rowDataList) => {
+
+// 	const listOfDataList = Convert.convertObjListToListList(Header.Read, rowDataList);
+// 	return listOfDataList;
+// }
+
 Convert.convertToFileData = (rowDataList) => {
 	const filteredObjList = Utils.filterByContain(rowDataList);
 	const needList = filteredObjList.map(getNeedColObj);
 	return needList;
 }
+
+
+
+Convert.filterByNRNumber = (dataList) => {
+	const {N, R} = Settings.Column.Read
+	const filteredList = []
+	const narDict = {};
+	const rasDict = {};
+
+	dataList.forEach((item) => {
+		const narNum = item[N];
+		const rasNum = item[R]
+		if (narNum && !narDict[narNum]) {
+			narDict[narNum] = true;
+			filteredList.push(item);
+		}
+
+		if (rasNum && !rasDict[rasNum]) {
+			rasDict[rasNum] = true;
+			filteredList.push(item);
+		} 
+		if (!narNum && !rasNum) {
+			filteredList.push(item);
+		}
+
+	})
+	return filteredList;
+}
+
+
+Convert.filterByPeriod = (dataList, date) => 
+	dataList.filter((item) => Sort.compareByDate(item[Settings.Column.Read.Date], date) >= 0);

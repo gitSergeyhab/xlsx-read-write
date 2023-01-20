@@ -9,7 +9,7 @@ body * {
 section {
     width: 100%;
     border: 3px #000000 solid;
-    margin: 1rem;
+    margin: 0.2rem 1rem;
     padding: 0.1rem 1rem;
     box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.4);
     transition: all 0.3s;
@@ -43,6 +43,7 @@ h3 {
 
 button {
     color: #FFFFFF;
+    padding: 0.1rem 0.5rem;
     background-color: #000000;
     cursor: pointer;
     box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
@@ -117,8 +118,10 @@ strong {
 }
 
 .error {
-    color: darkred;
+    background-color: #700808;
+    color: #FFFFFF;
     text-align: center;
+    padding: 0 2rem;
 }
 
 .addition {
@@ -133,7 +136,6 @@ strong {
     scale: 1;
 }
 
-/* .air-datepicker-input {
-    width: 100%;
-    min-width: 600px;
-} */
+.air-datepicker-input {
+    text-align: center;
+}

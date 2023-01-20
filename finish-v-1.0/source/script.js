@@ -38,21 +38,35 @@ const table = document.querySelector('#table');
 const divNames = document.querySelector('#names');
 const error = document.querySelector('#error');
 
-
-const clearError = () => error.textContent = '';
-const addNoDateError = () => error.textContent = 'Сначала Нужно достать данные';
-
-
 fileInputOwn.addEventListener('change', (evt) => {fileOwn = evt.target.files[0]});
 fileInputOJ.addEventListener('change', (evt) => {fileOJ = evt.target.files[0]});
 
+const setError = (message) => {
+	if (Array.isArray(message)) {
+		console.log('Array')
+		const text = message.join('. ');
+		console.log(text)
+		error.innerHTML = text;
+	} else {
+		error.innerHTML = message;
+	}
+}
+
+
+const Message = {
+	NoOwn: 'Не загружен файл своей таблицы',
+	NoOJ: 'Не загружен файл выгрузки журнала',
+	NoDate: 'Не выбрана дата',
+	NoExtractData: 'Нужно сначала достать данные (п.2)',
+	NoConvertData: 'Нужно сначала обработать данные (п.3)'
+}
 
 
 
 btnAddData.addEventListener('click', () => {
 
     if (fileOwn && fileOJ) {
-		clearError();
+		setError('');
 		readerOwn.readAsBinaryString(fileOwn);
 		readerOJ.readAsBinaryString(fileOJ);
 
@@ -65,7 +79,6 @@ btnAddData.addEventListener('click', () => {
 			range.s.r = 2; // <-- zero-indexed, so setting to 1 will skip row 0
 			worksheet['!ref'] = XLSX.utils.encode_range(range);
 			ownRawDataList = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-
         }
 
 		readerOJ.onload = (evt) => {
@@ -75,199 +88,129 @@ btnAddData.addEventListener('click', () => {
 			ojRawDataList = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
         }
     } else if (!fileOwn && !fileOJ) {
-		error.textContent = 'Файлы не загружен'
+		setError([Message.NoOwn, Message.NoOJ])
 	} else if (!fileOwn) {
-		error.textContent = 'Файл таблицы не загружен'
+		setError([Message.NoOwn])
 	} else if (!fileOJ) {
-		error.textContent = 'Файл журнала не загружен'
+		setError([ Message.NoOJ])
 	}
 })
 
 
 btnShowOwn.addEventListener('click', () => {
     if (ownRawDataList.length) {
-		clearError();
+		setError('');
 		const showList = Convert.convertToShow(ownRawDataList)
 		table.innerHTML = Render.createTable(showList, Header.Read);
 		divNames.innerHTML = '';
     } else {
-		addNoDateError();
+		setError(Message.NoExtractData)
 	}
 })
 
 btnShowOJ.addEventListener('click', () => {
     if (ojRawDataList.length) {
-		clearError();
+		setError('');
 		const showList = Convert.convertToShowOJ(ojRawDataList)
 		table.innerHTML = Render.createTable(showList, Header.Read);
 		divNames.innerHTML = '';
     } else {
-		addNoDateError();
+		setError(Message.NoExtractData);
 	}
 })
-
-
-const filterByNRNumber = (dataList) => {
-	const {N, R} = Settings.Column.Read
-	const filteredList = []
-	const narDict = {};
-	const rasDict = {};
-
-	dataList.forEach((item) => {
-		const narNum = item[N];
-		const rasNum = item[R]
-		if (narNum && !narDict[narNum]) {
-			narDict[narNum] = true;
-			filteredList.push(item);
-		}
-
-		if (rasNum && !rasDict[rasNum]) {
-			rasDict[rasNum] = true;
-			filteredList.push(item);
-		} 
-		if (!narNum && !rasNum) {
-			filteredList.push(item);
-		}
-
-	})
-	return filteredList;
-}
-
-const filterByPeriod = (dataList, date) => 
-	dataList.filter((item) => Sort.compareByDate(item[Settings.Column.Read.Date], date) >= 0);
 
 
 btnConvertData.addEventListener('click', () => {
 	const date = picker.value;
 
     if (ojRawDataList.length && ownRawDataList.length && date) {
-		clearError();
+		setError('');
 		const ojData = Convert.convertToFileData(ojRawDataList);
 		const data = [...ojData, ...ownRawDataList];
-		const sortedData = Sort.sortListByDate(data);
-		const filteredList = filterByNRNumber(sortedData);
-		unionDataList = filterByPeriod(filteredList, date);
-    } else if (!data) {
-		error.textContent = 'нужно выбрать дату начала периода'
+		const sortedData = Sort.sortDataList(data);
+		const filteredList = Convert.filterByNRNumber(sortedData);
+		unionDataList = Convert.filterByPeriod(filteredList, date);
+    } else if (!date && !ojRawDataList.length && !ownRawDataList.length) {
+		setError([Message.NoDate, Message.NoExtractData])
 	} else {
-		addNoDateError();
-
+		setError(Message.NoDate)
 	}
 })
 
 
-
-
-
-btnWrite.addEventListener('click', () => {
-	// const picker = document.querySelector('#air-datepicker');
-	// const xx = document.querySelector('#xx');
-
-
-	console.log(picker.value)
+btnShowResult.addEventListener('click', () => {
+	if (unionDataList.length) {
+		setError('');
+		const showList = Convert.convertObjListToListList(Header.Read, unionDataList);
+		table.innerHTML = Render.createTable(showList, Header.Read);
+		divNames.innerHTML = '';
+	} else {
+		setError(Message.NoConvertData);
+	}
 })
 
+btnShowResultNames.addEventListener('click', () => {
+	if (unionDataList.length) {
+		setError('');
+		const fullList = Convert.getFullObjList(unionDataList)
+		const showList = Convert.convertObjListToListList(Header.Write, fullList);
+		table.innerHTML = Render.createTable(showList, Header.Write);
+		divNames.innerHTML = '';
+	} else {
+		setError(Message.NoConvertData);
+	}
+})
 
+btnShowNames.addEventListener('click', () => {
+    if (unionDataList.length) {
+		setError('');
+		const names = Convert.getNamesAndCountList(unionDataList);
+		divNames.innerHTML = Render.createUl(names);
+		table.innerHTML = '';
+	} else {
+		setError(Message.NoConvertData);
+	}
+})
 
-// btnConvert.addEventListener('click', () => {
-//     if (file) {
-// 		clearError();
-// 		reader.readAsBinaryString(file);
+// const xx = [
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '1', [Settings.Column.Read.N]: '', order: 1},
+// 	{[Settings.Column.Read.Date]: '22.12.22', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '3', order: 2},
+// 	{[Settings.Column.Read.Date]: '2.12.2022', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '', order: 3},
+// 	{[Settings.Column.Read.Date]: '2.11.2022', [Settings.Column.Read.R]: '3', [Settings.Column.Read.N]: '', order: 4},
+// 	{[Settings.Column.Read.Date]: '12.10.2022', [Settings.Column.Read.R]: '4', [Settings.Column.Read.N]: '', order: 5},
+// 	{[Settings.Column.Read.Date]: '1.12.22', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '', order: 6},
+// 	{[Settings.Column.Read.Date]: '2.12.23', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '', order: 7},
+// 	{[Settings.Column.Read.Date]: '12.10.2023', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '', order: 8},
+// 	{[Settings.Column.Read.Date]: '12.01.23', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '1', order: 9},
+// 	{[Settings.Column.Read.Date]: '12.02.23', [Settings.Column.Read.R]: '2', [Settings.Column.Read.N]: '', order: 10},
+// 	{[Settings.Column.Read.Date]: '12.03.23', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '2', order: 11},
+// ]
 
-// 		reader.onload = (evt) => {
-// 			const data = evt.target.result;
-// 			const workbook = XLSX.read(data, {type:"binary", cellDates: true});
-// 			const sheetName = workbook.SheetNames[0];
-// 			const worksheet = workbook.Sheets[sheetName];
-// 			const range = XLSX.utils.decode_range(worksheet['!ref']);
-// 			range.s.r = 2; // <-- zero-indexed, so setting to 1 will skip row 0
-// 			worksheet['!ref'] = XLSX.utils.encode_range(range);
-// 			readObjList = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-//         }
-//     } else {
-// 		error.textContent = 'Файл не загружен'
-// 	}
-// })
+// const xx = [
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '1', [Settings.Column.Read.N]: '', order: 1},
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '3', order: 2},
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '', order: 3},
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '3', [Settings.Column.Read.N]: '', order: 4},
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '4', [Settings.Column.Read.N]: '', order: 5},
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '', order: 6},
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '', order: 7},
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '', order: 8},
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '1', order: 9},
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '2', [Settings.Column.Read.N]: '', order: 10},
+// 	{[Settings.Column.Read.Date]: '12.12.22', [Settings.Column.Read.R]: '', [Settings.Column.Read.N]: '2', order: 11},
+// ]
 
-
-// btnShow.addEventListener('click', () => {
-//     if (readObjList.length) {
-// 		clearError();
-// 		const showList = Convert.convertToShow(readObjList)
-// 		table.innerHTML = Render.createTable(showList, Header.Write);
-// 		divNames.innerHTML = '';
-//     } else {
-// 		addNoDateError();
-// 	}
-// })
-
-// btnWrite.addEventListener('click', () => {
-//     if (readObjList.length) {
-		// const newObjList = Convert.getFullObjList(readObjList)
-// 		const newWB = XLSX.utils.book_new();
-// 		const newWS = XLSX.utils.json_to_sheet(newObjList, {header: Header.Write});
-// 		XLSX.utils.book_append_sheet(newWB, newWS, 'NEW');
-// 		XLSX.writeFile(newWB, 'new-file.xlsx');
-//     } else {
-// 		addNoDateError();
-// 	}
-// })
-
-
-// btnNames.addEventListener('click', () => {
-//     if (readObjList.length) {
-// 		const names = Convert.getNamesAndCountList(readObjList);
-// 		const sortedNames = Sort.sortListByNames(names);
-// 		divNames.innerHTML = Render.createUl(sortedNames);
-// 		table.innerHTML = '';
-// 	} else {
-// 		addNoDateError();
-// 	}
-// })
-
-// //_____ OJ _______
-
-
-// fileInputOJ.addEventListener('change', (evt) => {fileOJ = evt.target.files[0]});
-
-// btnConvertOJ.addEventListener('click', () => {
-//     if (fileOJ) {
-// 		clearError();
-// 		readerOJ.readAsBinaryString(fileOJ);
-
-// 		readerOJ.onload = (evt) => {
-// 			const data = evt.target.result;
-// 			const workbook = XLSX.read(data, {type:"binary", cellDates: true});
-// 			const sheetName = workbook.SheetNames[0];
-// 			readObjListOJ = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-//         }
-//     } else {
-// 		error.textContent = 'Файл не загружен'
-// 	}
-// })
-
-
-// btnShowOJ.addEventListener('click', () => {
-//     if (readObjListOJ.length) {
-// 		clearError();
-// 		const showList = Convert.convertToShowOJ(readObjListOJ)
-// 		table.innerHTML = Render.createTable(showList, Header.Read);
-// 		divNames.innerHTML = '';
-//     } else {
-// 		addNoDateError();
-// 	}
-// })
-
-// btnWriteOJ.addEventListener('click', () => {
-//     if (readObjListOJ.length) {
-// 		const newObj = Convert.convertToFileData(readObjListOJ)
-// 		const newWB = XLSX.utils.book_new();
-// 		const newWS = XLSX.utils.json_to_sheet(newObj, {header: Header.Read});
-// 		XLSX.utils.book_append_sheet(newWB, newWS, 'NEW');
-// 		XLSX.writeFile(newWB, 'new-file.xlsx');
-//     } else {
-// 		addNoDateError();
-// 	}
-// })
-
-
+btnWrite.addEventListener('click', () => {
+	// console.log({xx})
+	// const sorted = Sort.sortDataList(xx);
+	// console.log({sorted})
+    if (unionDataList.length) {
+		setError('');
+		const newWB = XLSX.utils.book_new();
+		const newWS = XLSX.utils.json_to_sheet(unionDataList, {header: Header.Read});
+		XLSX.utils.book_append_sheet(newWB, newWS, 'NEW');
+		XLSX.writeFile(newWB, 'new-file.xlsx');
+    } else {
+		setError(Message.NoConvertData);
+	}
+})
