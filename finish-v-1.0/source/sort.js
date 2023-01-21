@@ -1,21 +1,16 @@
-Sort.getDateStampFromString = (str) => {
-	const [day, month, year] = str.split('.').map((x) => +x);
-	const trueYear = year > 2000 ? year : 2000 + year;
-	// console.log(new Date(trueYear, month - 1, day).getTime() > 1671570000000, str, '21.12.2022');
-	return new Date(trueYear, month - 1, day).getTime();
-}
+
 
 const getDateFromFileName = (fileName) => fileName.split('_')[0];
 
 
 
-Sort.compareByDate = (a, b) => Sort.getDateStampFromString(a) - Sort.getDateStampFromString(b);
+Sort.compareByDate = (a, b) => Utils.getDateStampFromString(a) - Utils.getDateStampFromString(b);
 
 Sort.compareByName = (a, b) =>  a.localeCompare(b);
 
 Sort.compareFileNames = (a, b) => {
 	if (getDateFromFileName(a) === getDateFromFileName(b)) {
-		return Sort.compareByName(a,b)
+		return Sort.compareByName(a,b);
 	}
 	return Sort.compareByDate(a, b);
 };
@@ -78,5 +73,35 @@ Sort.sortDataList = (objList) => {
 	const copy = [...objList];
 	copy.sort((a, b) => Sort.compareByDateNR(a, b));
 	return copy;
-
 }
+
+
+Sort.compareNames = (a, b) => {
+	const marker = '_ТУ_';
+	const aNames = a.split(marker);
+	const bNames = b.split(marker);
+
+	if(aNames.length < 2) {
+		return 1;
+	}
+
+	if(bNames.length < 2) {
+		return -1;
+	}
+
+	const diffDate = Sort.compareByDate(aNames[0], bNames[0])
+
+
+
+	if (diffDate) {
+		return diffDate
+	}
+	console.log()
+	return Sort.compareByName(aNames[1], bNames[1])
+}
+
+// Sort.sortNameList = (nameList) => {
+// 	const copy = [...nameList];
+// 	copy.sort(Sort.compareNames);
+// 	return copy;
+// }

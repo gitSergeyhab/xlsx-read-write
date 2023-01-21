@@ -1,4 +1,35 @@
 ﻿// const XLSX = require('xlsx');
+// location.reload(true);
+
+const folderList = [];
+
+const folders = document.querySelectorAll('.folder');
+
+const btnFolder = document.querySelector('#btn-folder');
+
+
+
+folders.forEach((item) => {
+	item.addEventListener('change', (evt) => folderList.push(evt.target.files))
+})
+
+
+
+btnFolder.addEventListener('click', () => {
+	const x = Utils.extractFileNamesFromFolderList(folderList);
+	console.log({x});
+
+	const xx = [...x];
+
+	xx.sort(Sort.compareByName);
+	console.log({xx});
+
+})
+
+
+
+
+
 
 const {Code} = Settings;
 
@@ -162,10 +193,16 @@ btnShowResultNames.addEventListener('click', () => {
 })
 
 btnShowNames.addEventListener('click', () => {
-    if (unionDataList.length) {
+	const date = picker.value;
+	if (unionDataList.length && folderList.length && date) {
+		const {Name} = Settings.Column.ReadAdd
 		setError('');
-		const names = Convert.getNamesAndCountList(unionDataList);
-		divNames.innerHTML = Render.createUl(names);
+		const folderFileNames = Utils.extractFileNamesFromFolderList(folderList);
+		const filteredFolders = Utils.filterFilenamesByDate(folderFileNames, date);
+		filteredFolders.sort(Sort.compareNames);
+		const tableFileNames = Convert.getNamesAndCountList(unionDataList);
+		tableFileNames.sort((a,b) => Sort.compareNames(a[Name], b[Name]))
+		divNames.innerHTML = Render.createUlContainer(filteredFolders, tableFileNames);
 		table.innerHTML = '';
 	} else {
 		setError(Message.NoConvertData);
@@ -201,9 +238,7 @@ btnShowNames.addEventListener('click', () => {
 // ]
 
 btnWrite.addEventListener('click', () => {
-	// console.log({xx})
-	// const sorted = Sort.sortDataList(xx);
-	// console.log({sorted})
+
     if (unionDataList.length) {
 		setError('');
 		const newWB = XLSX.utils.book_new();

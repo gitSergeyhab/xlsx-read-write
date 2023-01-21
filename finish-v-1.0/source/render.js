@@ -14,6 +14,8 @@ Render.createLi = (idx, element) => {
 	const {FilesCount, Name} = Settings.Column.ReadAdd;
 	const fileName =  element[Name];
 	const count =  element[FilesCount];
+	const marker = Utils.getMarkerStr(fileName);
+	const markerBlock = marker ? `< <span class="marker"> ${marker} </span> >` : '';
 	return `
 	<li>
 		<i>${idx}. </i>
@@ -21,29 +23,41 @@ Render.createLi = (idx, element) => {
 			<input type="checkbox" class="checkbox" id="${idx}"/> 
 			<strong>${fileName}</strong> 
 			<i> файлов: ${count}</i>
+			${markerBlock}
 		</label>
 	</li>
-	`
+	`;
 }
 
+Render.createSimpleLi = (idx, name) => {
+	const marker = Utils.getMarkerStr(name);
+	const markerBlock = marker ? `< <span class="marker"> ${marker} </span> >` : '';
+	return `
+	<li>
+		<i>${idx}. </i>
+		<label for="f-${idx}">
+			<input type="checkbox" class="checkbox" id="f-${idx}"/> 
+			<strong>${name}</strong> 
+			${markerBlock}
+		</label>
+	</li>
+	`;
+} 
 
-Render.createUl = (fileNameList) => {
-	const liElements = fileNameList.map((item, i) => Render.createLi(i+1, item))
-	return `<ul>${liElements.join('\n')}</ul>`
+
+
+Render.createUl = (fileNameList, fnRenderLi, marker) => {
+	const liElements = fileNameList.map((item, i) => fnRenderLi(i+1, item));
+
+	const header = marker ? 'Такие файлы есть' : 'А примерно такие должны быть';
+	return `<div><h4>${header}</h4><ul>${liElements.join('\n')}</ul></div>`;
 }
 
-
-// Render.createTable = (objList) => {
-// 	const fullObj = Convert.getFullObjList(objList);
-// 	const listOfDataList = Convert.convertObjListToListList(Header.Write, fullObj);
-// 	const tableBody = getTableBody(listOfDataList);
-
-// 	const thElements = Header.Write.map((item) => getTH(item));
-// 	const headerRow = getTR(thElements.join(''));
-
-// 	const tableStr = headerRow + tableBody;
-// 	return tableStr
-// }
+Render.createUlContainer = (folderEls, tableEls) => {
+	const folderUl = Render.createUl(folderEls, Render.createSimpleLi, 1);
+	const tableUl = Render.createUl(tableEls, Render.createLi)
+	return `<div class="ul-container">${folderUl}${tableUl}</div>`;
+}
 
 Render.createTable = (objList, headers) => {
 	const tableBody = getTableBody(objList);

@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-control" content="no-cache">
     <link href="source/side/air-datepicker.css" rel="stylesheet">
     <link href="source/style.css" rel="stylesheet">
+    <link href="source/inputs.css" rel="stylesheet">
+
     <title>видеофиксция и прочий бред</title>
 
 
@@ -15,6 +18,35 @@
     <h3>Сначала делаем выгрузку из оперативного журнала за последние 40 дней</h3>
     <form>
         <h2 id="error" class="error"></h2>
+
+        
+    <section>
+        <h3>0. Добавить папки с файлами служб</h3>
+
+        <div class="btn-block">
+            <label> ПС
+               <input name="file" type="file" id="folder-1" class="folder" webkitdirectory directory multiple> 
+            </label>
+            <label> ЛЭП
+                <input name="file" type="file" id="folder-2" class="folder" webkitdirectory directory multiple> 
+             </label>
+             <label> РЗА
+                <input name="file" type="file" id="folder-3" class="folder" webkitdirectory directory multiple> 
+             </label>
+             <label> СДТУ
+                <input name="file" type="file" id="folder-4" class="folder" webkitdirectory directory multiple> 
+             </label>
+             <label> Запасная
+                <input name="file" type="file" id="folder-5" class="folder" webkitdirectory directory multiple> 
+             </label>
+        </div>
+
+        <div class="btn-block">
+            <button type="button" id="btn-folder">test</button>
+            <!-- <button type="button" id="btn-folder-default">test-1</button> -->
+        </div>
+        
+    </section>
 
 
     <section>

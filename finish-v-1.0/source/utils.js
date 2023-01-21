@@ -16,6 +16,12 @@ const checkStartWork = (obj) => {
 
 Utils.filterByContain = (objList) => objList.filter(checkStartWork);
 
+Utils.getDateStampFromString = (str) => {
+	const [day, month, year] = str.split('.').map((x) => +x);
+	const trueYear = year > 2000 ? year : 2000 + year;
+	// console.log(new Date(trueYear, month - 1, day).getTime() > 1671570000000, str, '21.12.2022');
+	return new Date(trueYear, month - 1, day).getTime();
+}
 
 
 Utils.createFileName = (obj) => {
@@ -55,4 +61,33 @@ Utils.countFiles = (obj) => {
 	const Count = obj[Read.Count];
 	const count = [Action, PRM, Watch, Count].filter((x) => x).reduce((acc, item) => acc + +item, 0);
 	return count;
+}
+
+Utils.extractFileNamesFromFolderList = (folders) => {
+	return folders.reduce((acc, item) => {
+		for (const file of Object.values(item)) {
+			acc.push(file.name)
+		}
+		return acc;
+	} , []);
+}
+
+Utils.checkDate = (date, markerDate) => 
+	Utils.getDateStampFromString(date) >= Utils.getDateStampFromString(markerDate)
+
+Utils.filterFilenamesByDate = (filenames, markerDate) => {
+	return filenames.filter((item) => {
+		const splitted = item.split(Settings.Markers.SplitDate);
+		if (splitted.length < 2) {
+			return false;
+		}
+
+		return Utils.checkDate(splitted[0], markerDate)
+	})
+}
+	
+
+Utils.getMarkerStr = (name) => {
+	const matchArr = name.match(Settings.Markers.Pattern);
+	return matchArr ? matchArr[0].slice(1) : null;
 }

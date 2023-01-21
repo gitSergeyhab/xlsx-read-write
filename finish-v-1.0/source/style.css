@@ -33,6 +33,12 @@ h3 {
     margin: 0.3rem;
 }
 
+h4 {
+    text-align: center;
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
 .btn-block {
     width: 100%;
     padding: 0.5rem;
@@ -138,4 +144,14 @@ strong {
 
 .air-datepicker-input {
     text-align: center;
+}
+
+.ul-container {
+    display: flex;
+    justify-content: center;
+}
+
+.marker {
+    color: gold;
+    font-weight: 700;
 }
